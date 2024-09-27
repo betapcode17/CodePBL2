@@ -1,0 +1,16 @@
+15
+1|Book Title 1|Fiction|Author 1|10|1500000|2020
+2|Book Title 2|Science|Author 2|5|200|2024
+3|Book Title 3|Fantasy|Author 3|7|180|2024
+4|Book Title 4|Mystery|Author 4|12|175|2019
+5|Book Title 5|Biography|Author 5|3|220|2021
+6|Book Title 6|Romance|Author 6|8|140|2022
+7|Book Title 7|Horror|Author 7|15|160|2018
+8|Book Title 8|History|Author 8|4|210|2023
+9|Book Title 9|Adventure|Author 9|9|170|2020
+10|Book Title 10|Science Fiction|Author 10|6|190|2024
+11|Book Title 11|Self-Help|Author 11|11|155|2022
+12|Book Title 12|Drama|Author 12|6|180|2023
+13|Book Title 13|Poetry|Author 13|8|130|2021
+14|Book Title 14|Classic|Author 14|10|200|2017
+15|Book Title 15|Thriller|Author 15|9|170|2020
