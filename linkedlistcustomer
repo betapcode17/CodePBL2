@@ -1,0 +1,47 @@
+#include<iostream>
+#include<fstream>
+#include<sstream>
+#include "book.h"
+#include "customer.h"
+#include "list.h"
+void LinkedList::readCustomer(const string& fileName) {
+    ifstream infile(fileName);
+    if (!infile.is_open()) {
+        cout << "Could not open the file " << fileName << endl;
+        return;
+    }
+
+    int n;
+    infile >> n;  // Read number of customers
+    infile.ignore();  // Ignore the newline after the number
+
+    CustomerNode* temp = nullptr;
+
+    for (int i = 0; i < n; ++i) {
+        CustomerNode* newNode = new CustomerNode();
+        getline(infile, newNode->data.ho_ten, '|');
+        getline(infile, newNode->data.dia_chi, '|');
+        getline(infile, newNode->data.sdt_khach_hang, '|');
+        newNode->next = NULL;  // End of list
+
+        if (customerHead == NULL) {
+            customerHead = newNode;  // Set first node as head
+        } else {
+            temp->next = newNode;  // Attach the new node to the list
+        }
+        temp = newNode;  // Move to the next node
+    }
+
+    infile.close();
+}
+// Display customers
+void LinkedList::displayCustomers() {
+    CustomerNode* temp = customerHead;
+    while (temp != NULL) {
+        cout << "Ho Ten: " << temp->data.getHoTen() << endl;
+        cout << "Dia Chi: " << temp->data.getDiaChi() << endl;
+        cout << "So Dien Thoai: " << temp->data.getSdtKhachHang() << endl;
+        cout << "-----------------------------" << endl;
+        temp = temp->next;
+    }
+}
