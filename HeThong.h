@@ -34,11 +34,17 @@ inline void drawBox(int x, int y, int width, int height) {
         gotoXY(x + width - 1, y + i); cout << char(179); 
     }
 }
-inline void ShowCur(bool CursorVisibility)
-{
-	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_CURSOR_INFO cursor = { 1, CursorVisibility };
-	SetConsoleCursorInfo(handle, &cursor);
+
+inline void Showcur(bool CursorVisibility) {
+    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_CURSOR_INFO ConCurInf;
+    ConCurInf.bVisible = CursorVisibility;
+    ConCurInf.dwSize = 1;
+    SetConsoleCursorInfo(handle, &ConCurInf);
+}
+inline void setcolor(int text_color, int background_color) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, (background_color << 4) | text_color);
 }
 
 //Ghi lỗi và thoát ra ( dùng trong bắt sự kiện chuột)
@@ -230,7 +236,4 @@ writeString(x + 102, y + 1, L"Giá Bán");
 	writeString(x + 3, y + 24, L"Nhấn nút [->] để tới trang tiếp theo, [<-] để quay về trang trước!!");
 	writeString(x + 135, y - 2, L"Trang: ");
 	wcout << number << L"/" << sum;
-}
-inline void menu(){
-	cout<<"DAT";
 }
