@@ -7,7 +7,6 @@
 #include "Users.h"
 #include "HeThong.h"
 using namespace std;
-
 wstring Users::getPassword() {
 	wstring password;
 	char ch;
@@ -46,7 +45,7 @@ bool Users::login() {
     WORD savedAttributes;
     GetConsoleScreenBufferInfo(consoleHandle, &consoleInfo);
     savedAttributes = consoleInfo.wAttributes;
-
+    
     display_login();
     
     while (true) {
@@ -127,14 +126,19 @@ bool Users::login() {
         } else {
             break; // Successful login
         }
-    }
-    
+    } 
     return role;
 }
-void Users::forgot_password() {
+void Users::setRole(int role)
+{
+    this->role=role;
+}
+void Users::forgot_password()
+{
     system("cls");
     setTextColor(11);
-    drawBox(45, 10, 35, 3);
+      _setmode(_fileno(stdout), _O_U16TEXT);
+   menuTable(45, 10, 40, 3);
     writeString(46, 11, L"Nhap ten dang nhap: ");
     wstring username_input;
     getline(wcin, username_input); 
@@ -165,17 +169,14 @@ void Users::forgot_password() {
         wstring file_username;
         int file_password, field1; // Additional fields (e.g., role or flag)
         infile >> file_username >> file_password >> field1;
-
         if (username_input == file_username) {
             account_found = true;
-
-            // Prompt user to enter a new password
-            drawBox(45, 14, 35, 3);
-            writeString(46, 15, L"Nhap mat khau moi: ");
+             menuTable(45, 14, 40, 3);
+            writeChar(46, 15, L"Nhap mat khau moi: ");
             int new_password;
             wcin >> new_password;
             tempFile << file_username << L" " << new_password << L" " << field1 << endl;
-            writeString(45, 17, L"Cap nhat mat khau thanh cong!");
+            writeChar(45, 18, L"Cap nhat mat khau thanh cong!");
         } else {
             tempFile << file_username << L" " << file_password << L" " << field1 << endl;
         }
