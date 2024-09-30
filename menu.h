@@ -1,69 +1,56 @@
 #include <iostream>
 #include <windows.h>
 #include <conio.h>
+#include "HeThong.h"
 using namespace std;
 
-void gotoXY(int x, int y) {
-    COORD coord = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-}
-void drawBox(int x, int y, int width, int height) {
-    gotoXY(x, y); cout << char(218); 
-    gotoXY(x + width - 1, y); cout << char(191); 
-    gotoXY(x, y + height - 1); cout << char(192); 
-    gotoXY(x + width - 1, y + height - 1); cout << char(217); 
-
-    for (int i = 1; i < width - 1; ++i) {
-        gotoXY(x + i, y); cout << char(196); 
-        gotoXY(x + i, y + height - 1); cout << char(196); 
-    }
-
-    for (int i = 1; i < height - 1; ++i) {
-        gotoXY(x, y + i); cout << char(179); 
-        gotoXY(x + width - 1, y + i); cout << char(179); 
-    }
-}
-void setcolor(int text_color, int background_color) {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole, (background_color << 4) | text_color);
-}
-
-void Showcur(bool CursorVisibility) {
-    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_CURSOR_INFO ConCurInf;
-    ConCurInf.bVisible = CursorVisibility;
-    ConCurInf.dwSize = 1;
-    SetConsoleCursorInfo(handle, &ConCurInf);
-}
-
-string menuItems[] = {
+// --- Variables ---
+string menu[] = {
     "1> San Pham ",
     "2> Khach Hang",
     "3> Thong tin",
     "4> Thong ke",
     "5> Thoat   "
 };
-string menuBook[] = {
-    "1> Nhap sach",
-    "2> Quan Li sach",
-    "3> Thoat"
-};
-string menuKH[] = {
-    "1> Nhap khach hang",
-    "2> Quan Li khanh hang",
-    "3> Thoat"
-};
-const int menuSize = 5; // Số lượng mục trong menu
+int menuSize = sizeof(menu) / sizeof(menu[0]);
 
-void Noi_dung_menu() {
-    for (int i = 0; i < menuSize; i++) {
-        gotoXY(43, 10 + i * 3); // Chỉnh khoảng cách giữa các mục thành 3 đơn vị
-        cout << menuItems[i];
-    }
-}
+string menuSanPham[] = {
+    "1> Nhap san pham ",
+    "2> Quan Li san Pham"
+};
+int menuSanPhamSize = sizeof(menuSanPham) / sizeof(menuSanPham[0]);
 
-// Hàm để in thanh sáng trên mục menu hiện tại
-void thanh_sang(int x, int y, int w, int h, int b_color) {
+string menuCRUD[] ={
+    "1> Xem thong tin cua sach",
+    "2> Them sach moi",
+    "3> Xoa sach",
+    "4> Cap nhat sach"
+};
+int menuCRUDSize = sizeof(menuCRUD) / sizeof(menuCRUD[0]);
+
+string menuRead[] ={
+    "1> Tim kiem thong tin sach",
+    "2> Sap xep thong tin sach",
+};
+int menuReadSize = sizeof(menuRead) / sizeof(menuRead[0]);
+
+string menuSearch[] ={
+    "1> Tim kiem sach theo the loai",
+    "2> Tim kiem sach theo ten sach",
+    "3> Tim kiem sach theo tac gia",
+    "4> Tim kiem sach theo nam xuat ban",
+};
+int menuSearchSize = sizeof(menuSearch) / sizeof(menuSearch[0]);
+
+string menuSort[] ={
+    "1> Sap xep sach theo so luong",
+    "2> Sap xep sach theo so tien",
+    "3> Sap xep sach theo nam xuat ban",
+};
+int menuSortSize = sizeof(menuSort) / sizeof(menuSort[0]);
+
+// --- Functions ---
+void thanh_sang(int x, int y, int w, int h, int b_color, string menuItems[], int currentItem) {
     setcolor(15, b_color); // Màu chữ trắng (15), màu nền tùy chọn
     for (int iy = y + 1; iy <= y + h - 1; iy++) {
         for (int ix = x + 1; ix <= x + w - 1; ix++) {
@@ -71,120 +58,152 @@ void thanh_sang(int x, int y, int w, int h, int b_color) {
             cout << " ";
         }
     }
-   
-     In lại dòng chữ trong thanh sáng
     gotoXY(x + 2, y + 1);
-    cout << menuItems[(y - 7) / 3]; // Cập nhật lại chỉ mục dựa trên khoảng cách 3 đơn vị
-}
-
-// Hàm vẽ khung cho mỗi mục trong menu
-void box(int x, int y, int w, int h, int t_color, int b_color) {
-    setcolor(b_color, 0); // Màu nền của khung
-    for (int iy = y + 1; iy <= y + h - 1; iy++) {
-        for (int ix = x + 1; ix <= x + w - 1; ix++) {
-            gotoXY(ix, iy);
-            cout << " ";
-        }
-    }
-    setcolor(15, 0);
-    //======== Vẽ viền =======
-    setcolor(t_color, 0);
-    if (h <= 1 || w <= 1) return;
-    for (int ix = x; ix <= x + w; ix++) {
-        gotoXY(ix, y);
-        cout << char(196); // In đường ngang trên
-        gotoXY(ix, y + h);
-        cout << char(196); // In đường ngang dưới
-    }
-    for (int iy = y; iy <= y + h; iy++) {
-        gotoXY(x, iy);
-        cout << char(179); // In đường dọc trái
-        gotoXY(x + w, iy);
-        cout << char(179); // In đường dọc phải
-    }
-    gotoXY(x, y);
-    cout << char(218); // Góc trên bên trái
+    cout << menuItems[currentItem]; // Hiển thị mục menu tương ứng
     
-    gotoXY(x + w, y);
-    cout << char(191); // Góc trên bên phải
-    
-    gotoXY(x, y + h);
-    cout << char(192); // Góc dưới bên trái
-    
-    gotoXY(x + w, y + h);
-    cout << char(217); // Góc dưới bên phải
+    // Reset màu trở lại màu mặc định sau khi in thanh sáng
+ // Màu mặc định: chữ trắng, nền đen
 }
-
-void Tieu_de() {
-    box(41,0,43,6,14,0);
-    gotoXY(51,3);
-    cout << "MENU QUAN LI SACH THEO CUA HANG CHUYEN VE SACH";
-    setcolor(7, 0);
-}
-
-// Hàm chính để hiển thị menu
-int MENU() {
+int MENU(string menuItems[], int menuSize, int x, int y, int w, int h, int boxX, int boxY, int boxW) {
     Showcur(0);
-    //-------- Thiết lập ban đầu -----
-    int x = 41; // Vị trí x bắt đầu của menu
-    int y = 9;  // Vị trí y bắt đầu của menu
-    int w = 27;
-    int h = 2;
     int t_color = 11;
     int b_color = 0;
-    int b_color_sang = 014;
-    string nd = "";
-    int n = menuSize - 1; // Cập nhật lại số lượng mục menu
-    drawBox(40, 7, 30, 20);
-    Noi_dung_menu();
-    
-    //----------- Điều khiển thanh sáng ---------
-    int xp = x;
-    int yp = y;
-    int xcu = xp;
-    int ycu = yp;
+    int b_color_sang = 14;
+    int currentItem = 0;
+
+    // Draw box for menu
+    drawBox(boxX, boxY, boxW, menuSize * 3 + 4);
+
+    // Print all menu items with default color
+    for (int i = 0; i < menuSize; i++) {
+        gotoXY(x + 2, y + i * 3 + 1);
+        setcolor(7, 0);  // Default color
+        cout << menuItems[i];
+    }
+
+    int xp = x, yp = y, xcu = xp, ycu = yp;
     bool kt = true;
+
     while (true) {
         if (kt == true) {
-            gotoXY(xcu, ycu);
-            thanh_sang(xcu, ycu, w, h, b_color); // Reset thanh sáng cũ
+            // Reset previous item to default color
+            thanh_sang(xcu, ycu, w, h, b_color, menuItems, (ycu - y) / 3);
+
+            // Update current coordinates
             xcu = xp;
             ycu = yp;
-            thanh_sang(xcu, ycu, w, h, b_color_sang); // In thanh sáng mới
+
+            // Highlight new item
+            thanh_sang(xcu, ycu, w, h, b_color_sang, menuItems, (yp - y) / 3);
             kt = false;
         }
-        
-        // Điều khiển phím
+
         if (_kbhit()) {
             char c = _getch();
-          if (c == -32) { // Phím mũi tên
-    kt = true;
-    c = _getch();
-    if (c == 72) {  // Phím mũi tên lên
-        if (yp != y) 
-            yp -= 3;
-        else 
-            yp = y + 3 * (menuSize - 1); // Quay lại mục cuối cùng
-    } else if (c == 80) {  // Phím mũi tên xuống
-        if (yp != y + 3 * (menuSize - 1)) 
-            yp += 3;
-        else 
-            yp = y; // Quay lại mục đầu tiên
-    }
-}
+            if (c == -32) { // Arrow keys
+                kt = true;
+                c = _getch();
+                if (c == 72) {  // Up arrow key
+                    if (yp != y)
+                        yp -= 3;
+                    else
+                        yp = y + 3 * (menuSize - 1); // Loop back to last item
+                } else if (c == 80) {  // Down arrow key
+                    if (yp != y + 3 * (menuSize - 1))
+                        yp += 3;
+                    else
+                        yp = y; // Loop back to first item
+                }
+            } else if (c == 13) { // Enter key
+                setcolor(7, 0);  // Reset color to default before executing action
+                return (yp - y) / 3;  // Return the selected menu index
+            } else if (c == 27) { // ESC key
+                setcolor(7, 0);  // Reset color to default on ESC
+                return -1;  // Exit on ESC key press
+            }
         }
     }
 
-    // Đặt lại màu nền và màu chữ về mặc định
+    // Reset color to default at the end
     setcolor(7, 0);
-    gotoXY(0, 30); // Di chuyển con trỏ xuống dưới
+    gotoXY(0, 30);
+    return -1;
 }
 
-int main() {
-    box(41,0,43,6,14,0);
-    Tieu_de();
-    int x = MENU();
-    setcolor(7, 0);
-    _getch();
-    return 0;
+void ShowMenu() {
+    int choice;
+    bool exitFlag = false; 
+    
+    while (!exitFlag) {
+        choice = MENU(menu, menuSize, 41, 9, 28, 2, 40, 7, 30);
+        
+        if (choice == 0) {  // San Pham
+            bool productMenuExit = false;
+            while (!productMenuExit) {
+            
+                int k = MENU(menuSanPham, menuSanPhamSize, 73, 9, 30, 2, 72, 7, 35);
+                if (k == 0) {
+                    // Xử lý Nhap san pham
+                    _getch();  
+                } else if (k == 1) {
+                    bool crudMenuExit = false;
+                    while (!crudMenuExit) {
+                        system("cls");
+                        int i = MENU(menuCRUD, menuCRUDSize, 41, 9, 30, 2, 40, 7, 40);
+                        
+                        if (i == 0) { // "Xem thong tin cua sach"
+                            bool readMenuExit = false;
+                            while (!readMenuExit) {
+                                system("cls");
+                                int b = MENU(menuRead, menuReadSize, 41, 9, 30, 2, 40, 7, 40);
+                                if (b == 0) {
+                                    // Xử lý Tim kiem sach
+                                    bool searchMenuExit = false;
+                                    while (!searchMenuExit) {
+                                        system("cls");
+                                        int s = MENU(menuSearch, menuSearchSize, 41, 9, 30, 2, 40, 7, 40);
+                                        if (s == 0) {
+                                            // Xử lý Tim kiem sach theo the loai
+                                        } else if (s == 1) {
+                                            // Xử lý Tim kiem sach theo ten sach
+                                        } else if (s == 2) {
+                                            // Xử lý Tim kiem sach theo tac gia
+                                        } else if (s == 3) {
+                                            // Xử lý Tim kiem sach theo nam xuat ban
+                                        } else if (_getch() == 27) {
+                                            searchMenuExit = true; // Thoát menu Search
+                                        }
+                                    }
+                                } else if (b == 1) {
+                                    bool sortMenuExit = false;
+                                    while (!sortMenuExit) {
+                                        system("cls");
+                                        int s = MENU(menuSort, menuSortSize, 41, 9, 30, 2, 40, 7, 40);
+                                        if (s == 0) {
+                                            // Xử lý Sap xep sach theo so luong
+                                        } else if (s == 1) {
+                                            // Xử lý Sap xep sach theo so tien
+                                        } else if (s == 2) {
+                                            // Xử lý Sap xep sach theo nam xuat ban
+                                        } else if (setKeyBoard()== 5) {
+                                            sortMenuExit = true; // Thoát menu Sort
+                                        }
+                                    }
+                                } else if (setKeyBoard()==5) {
+                                    readMenuExit = true; // Thoát menu Read
+                                }
+                            }
+                        } else if (setKeyBoard()==5) {
+                            crudMenuExit = true;
+							system("cls"); // Thoát menu CRUD
+                        }
+                    }
+                } else if (setKeyBoard()==5) {
+                    productMenuExit = true; // Thoát menu San Pham
+                }
+            }
+        } else if (setKeyBoard()==5) {
+            exitFlag = true; // Thoát menu chính
+        }
+    }
 }
